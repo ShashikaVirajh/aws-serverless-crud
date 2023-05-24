@@ -1,0 +1,33 @@
+service: notes-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-1
+
+functions:
+  createNote:
+    handler: handler.createNote
+    events:
+      - http:
+          method: post
+          path: notes
+  updateNote:
+    handler: handler.updateNote
+    events:
+      - http:
+          method: put
+          path: notes/{id}
+
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
