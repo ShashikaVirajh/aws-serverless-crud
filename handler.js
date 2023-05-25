@@ -2,13 +2,21 @@
 
 const DynamoDB = require("aws-sdk/clients/dynamodb");
 const documentClient = new DynamoDB.DocumentClient({ region: "us-east-1" });
+const NOTES_TABLE_NAME = process.env.NOTES_TABLE_NAME;
 
-module.exports.createNote = async (event, context, callback) => {
+const send = (statusCode, data) => {
+  return {
+    statusCode,
+    body: JSON.stringify(data)
+  }
+}
+
+module.exports.createNote = async (event, _context, cb) => {
   const data = JSON.parse(event.body);
  
   try {
     const params = {
-      TableName: 'notes',
+      TableName: NOTES_TABLE_NAME,
       Item: {
         notesId: data.id,
         title: data.title,
@@ -19,25 +27,38 @@ module.exports.createNote = async (event, context, callback) => {
 
     await documentClient.put(params).promise();
 
-    callback(null, {
-      statusCode: 201,
-      body: JSON.stringify(data),
-    });
+    cb(null, send(201, data));
   } catch (error) {
-      callback(null, {
-        statusCode: 500,
-        body: JSON.stringify(error.message),
-      });
+    cb(null, send(500, error.message));
   }
 };
 
-module.exports.updateNote = async (event) => {
-  const noteId = event.pathParameters.id
+module.exports.updateNote = async (event, _context, cb) => {
+  const notesId = event.pathParameters.id
+  const data = JSON.parse(event.body);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(`Note ${noteId} updated!`),
-  };
+  try {
+    const params = {
+      TableName: NOTES_TABLE_NAME,
+      Key: { notesId },
+      UpdateExpression: 'set #title = :title, #body = :body',
+      ExpressionAttributeNames: {
+        '#title': 'title',
+        '#body': 'body',
+      },
+      ExpressionAttributeValues: {
+        ':title': data.title,
+        ':body': data.body,
+      },
+      ConditionExpression: "attribute_exists(notesId)",
+    }
+
+    await documentClient.update(params).promise();
+
+    cb(null, send(200, data));
+  } catch (error) {
+    cb(null, send(500, error.message));
+  }
 };
 
 module.exports.deleteNote = async (event) => {
