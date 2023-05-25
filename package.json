@@ -1,5 +1,5 @@
 {
-  "name": "notes",
+  "name": "aws-serverless-crud",
   "version": "1.0.0",
   "description": "",
   "main": "handler.js",
@@ -11,5 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1384.0"
+  },
+  "devDependencies": {
+    "serverless-iam-roles-per-function": "^3.2.0"
   }
 }

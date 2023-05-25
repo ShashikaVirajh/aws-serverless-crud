@@ -10,22 +10,30 @@ provider:
 functions:
   createNote:
     handler: handler.createNote
+    iamRoleStatements:
+      - Effect: Allow
+        Action: 
+          - dynamodb:PutItem
+        Resource: !GetAtt NotesTable.Arn
     events:
       - http:
           method: post
           path: notes
+
   updateNote:
     handler: handler.updateNote
     events:
       - http:
           method: put
           path: notes/{id}
+
   deleteNote:
     handler: handler.deleteNote
     events:
       - http:
           method: delete
           path: notes/{id}
+
   getAllNotes:
     handler: handler.getAllNotes
     events:
@@ -33,17 +41,20 @@ functions:
           method: get
           path: notes
 
+plugins:
+  - serverless-iam-roles-per-function
+
 resources:
- Resources:
-   NotesTable:
-     Type: AWS::DynamoDB::Table
-     Properties:
-       TableName: notes
-       BillingMode: PAY_PER_REQUEST
-       AttributeDefinitions:
-        - AttributeName: notesId
-          AttributeType: S
-       KeySchema:
-        - AttributeName: notesId
-          KeyType: HASH
+  Resources:
+    NotesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: notes
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: notesId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: notesId
+            KeyType: HASH
  
