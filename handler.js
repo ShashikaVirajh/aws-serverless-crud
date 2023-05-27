@@ -12,6 +12,8 @@ const send = (statusCode, data) => {
 }
 
 module.exports.createNote = async (event, _context, cb) => {
+  _context.callbackWaitsForEmptyEventLoop = false;
+  
   const data = JSON.parse(event.body);
  
   try {
@@ -26,7 +28,6 @@ module.exports.createNote = async (event, _context, cb) => {
     }
 
     await documentClient.put(params).promise();
-
     cb(null, send(201, data));
   } catch (error) {
     cb(null, send(500, error.message));
@@ -34,13 +35,15 @@ module.exports.createNote = async (event, _context, cb) => {
 };
 
 module.exports.updateNote = async (event, _context, cb) => {
+  _context.callbackWaitsForEmptyEventLoop = false;
+
   const notesId = event.pathParameters.id
   const data = JSON.parse(event.body);
 
   try {
     const params = {
       TableName: NOTES_TABLE_NAME,
-      Key: { notesId },
+      Key: { notesId }, 
       UpdateExpression: 'set #title = :title, #body = :body',
       ExpressionAttributeNames: {
         '#title': 'title',
@@ -54,25 +57,43 @@ module.exports.updateNote = async (event, _context, cb) => {
     }
 
     await documentClient.update(params).promise();
-
     cb(null, send(200, data));
   } catch (error) {
     cb(null, send(500, error.message));
   }
 };
 
-module.exports.deleteNote = async (event) => {
-  const noteId = event.pathParameters.id
+module.exports.deleteNote = async (event, _context, cb) => {
+  _context.callbackWaitsForEmptyEventLoop = false;
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(`Note ${noteId} deleted!`),
-  };
+  const notesId = event.pathParameters.id
+
+  try {
+    const params = {
+      TableName: NOTES_TABLE_NAME,
+      Key: { notesId },
+      ConditionExpression: "attribute_exists(notesId)",
+    }
+
+    await documentClient.delete(params).promise();
+    cb(null, send(200, notesId));
+  } catch (error) {
+    cb(null, send(500, error.message));
+  }
 };
 
-module.exports.getAllNotes = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify('All notes returned!'),
-  };
+module.exports.getAllNotes = async (_event, _context, cb) => {
+  _context.callbackWaitsForEmptyEventLoop = false;
+
+  try {
+    const params = {
+      TableName: NOTES_TABLE_NAME,
+    };
+
+    const notes = await documentClient.scan(params).promise();
+    cb(null, send(200, notes));
+  } catch (err) {
+
+    cb(null, send(500, err.message));
+  }
 };
