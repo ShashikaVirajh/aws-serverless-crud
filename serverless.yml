@@ -3,7 +3,7 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
   stage: dev
   region: us-east-1
 
@@ -12,7 +12,6 @@ functions:
     handler: handler.createNote
     environment:
       NOTES_TABLE_NAME: !Ref NotesTable
-      AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     iamRoleStatements:
       - Effect: Allow
         Action: 
@@ -27,7 +26,6 @@ functions:
     handler: handler.updateNote
     environment:
       NOTES_TABLE_NAME: !Ref NotesTable
-      AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     iamRoleStatements:
       - Effect: Allow
         Action: 
@@ -42,7 +40,6 @@ functions:
     handler: handler.deleteNote
     environment:
       NOTES_TABLE_NAME: !Ref NotesTable
-      AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     iamRoleStatements:
       - Effect: Allow
         Action: 
@@ -57,7 +54,6 @@ functions:
     handler: handler.getAllNotes
     environment:
       NOTES_TABLE_NAME: !Ref NotesTable
-      AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     iamRoleStatements:
       - Effect: Allow
         Action:
