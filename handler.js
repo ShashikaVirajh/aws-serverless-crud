@@ -1,6 +1,6 @@
 'use strict';
 
-const DynamoDB = require("@aws-sdk/client-dynamodb");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {
   DynamoDBDocumentClient,
   PutCommand,
@@ -9,10 +9,17 @@ const {
   ScanCommand,
 } = require("@aws-sdk/lib-dynamodb");
 
-const objDynamoDB = new DynamoDB({
+const dynamoDBClient = new DynamoDBClient({
   region: 'us-east-1',
+  maxAttempts: 3,
+  timeout: 10000,
 });
-const documentClient = DynamoDBDocumentClient.from(objDynamoDB);
+
+const documentClient = DynamoDBDocumentClient.from(dynamoDBClient, { 
+  marshallOptions: { 
+    removeUndefinedValues: true 
+  } 
+});
 
 const NOTES_TABLE_NAME = process.env.NOTES_TABLE_NAME;
 
@@ -20,8 +27,8 @@ const send = (statusCode, data) => {
   return {
     statusCode,
     body: JSON.stringify(data)
-  }
-}
+  };
+};
 
 module.exports.createNote = async (event) => {
   const data = JSON.parse(event.body);
