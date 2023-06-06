@@ -96,6 +96,7 @@ module.exports.deleteNote = async (event) => {
 };
 
 module.exports.getAllNotes = async (_event) => {
+  console.log('GET ALL EVENT OBJECT:', JSON.stringify(_event))
   try {
     const params = {
       TableName: NOTES_TABLE_NAME,
