@@ -41,7 +41,7 @@ cognitoUserPoolDomain:
   Type: AWS::Cognito::UserPoolDomain
   Properties:
     UserPoolId: !Ref cognitoUserPool
-    Domain: my-notes-cd
+    Domain: my-notes-user-domain
 
 # # Application parameters
 # userPoolIdParam:
