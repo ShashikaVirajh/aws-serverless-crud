@@ -74,12 +74,12 @@ functions:
           path: notes
           authorizer:
             name: userpool_authroizer
-            arn: arn:aws:cognito-idp:us-east-1:215287253750:userpool/us-east-1_KHOkj1zdo
+            type: COGNITO_USER_POOLS
+            arn: !GetAtt cognitoUserPool.Arn
 
 plugins:
   - serverless-iam-roles-per-function
 
-# Resource section incudes cloudformation resources
 resources:
   Resources: ${file(resources.yml)}
    

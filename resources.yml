@@ -23,18 +23,18 @@ cognitoUserPoolWebclient:
   Properties:
     UserPoolId: !Ref cognitoUserPool
     ClientName: web
-    # AllowedOAuthFlowsUserPoolClient: true
-    # SupportedIdentityProviders:
-    #   - COGNITO
-    # AllowedOAuthScopes:
-    #   - phone
-    #   - email
-    #   - profile
-    #   - openid
-    # AllowedOAuthFlows:
-    #   - implicit
-    # CallbackURLs:
-    #   - http://localhost:3000
+    AllowedOAuthFlowsUserPoolClient: true
+    SupportedIdentityProviders:
+      - COGNITO
+    AllowedOAuthScopes:
+      - phone
+      - email
+      - profile
+      - openid
+    AllowedOAuthFlows:
+      - implicit
+    CallbackURLs:
+      - http://localhost:3000
 
 # User pool domain
 cognitoUserPoolDomain:
@@ -43,10 +43,10 @@ cognitoUserPoolDomain:
     UserPoolId: !Ref cognitoUserPool
     Domain: my-notes-user-domain
 
-# # Application parameters
-# userPoolIdParam:
-#   Type: AWS::SSM::Parameter
-#   Properties:
-#     Name: /notes/dev/userPoolId
-#     Type: String
-#     Value: !GetAtt cognitoUserPool.Arn
+# Application parameters
+userPoolIdParam:
+  Type: AWS::SSM::Parameter
+  Properties:
+    Name: /notes/dev/userPoolId
+    Type: String
+    Value: !GetAtt cognitoUserPool.Arn
